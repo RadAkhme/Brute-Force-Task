@@ -10,6 +10,17 @@ import SnapKit
 
 class ViewController: UIViewController {
     
+    private lazy var label: UILabel = {
+        let label = UILabel()
+        label.text = "Label"
+        label.textColor = .systemCyan
+        label.font = .boldSystemFont(ofSize: 40)
+        
+        return label
+    }()
+    
+    
+    
     private lazy var button: UIButton = {
         let button = UIButton()
         button.setTitle("Push me срочно", for: .normal)
@@ -17,7 +28,7 @@ class ViewController: UIViewController {
         button.backgroundColor = .systemGreen
         button.layer.cornerRadius = 15
         button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
+
         return button
     }()
     
@@ -45,10 +56,17 @@ class ViewController: UIViewController {
     }
     
     private func setupHierarchy() {
+        view.addSubview(label)
         view.addSubview(button)
     }
     
     private func setupLayout() {
+        
+        label.snp.makeConstraints { make in
+            make.centerX.equalTo(view)
+            make.bottom.equalTo(button.snp.top).offset(-80)
+        }
+        
         button.snp.makeConstraints { make in
             make.center.equalTo(view)
             make.height.equalTo(40)
