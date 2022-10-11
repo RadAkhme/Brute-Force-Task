@@ -13,9 +13,10 @@ class ViewController: UIViewController {
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.backgroundColor = .white
-        textField.placeholder = "password"
+        textField.placeholder = "        password"
         textField.textAlignment = .center
         textField.layer.cornerRadius = 20
+        textField.setRightIcon()
         
         return textField
     }()
@@ -40,23 +41,28 @@ class ViewController: UIViewController {
         return button
     }()
     
-//    var isBlack: Bool = false {
-//        didSet {
-//            if isBlack {
+    static var activityIndicator = UIActivityIndicatorView(style: .medium)
+
+    
+    var isBlack: Bool = false {
+        didSet {
+            if isBlack {
 //                self.view.backgroundColor = .black
-//            } else {
+                ViewController.activityIndicator.startAnimating()
+            } else {
 //                self.view.backgroundColor = .systemGray3
-//            }
-//        }
-//    }
+                ViewController.activityIndicator.stopAnimating()
+            }
+        }
+    }
     
     @objc private func buttonPressed() {
-//        isBlack.toggle()
+        isBlack.toggle()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray3
+        view.backgroundColor = .systemYellow
         setupHierarchy()
         setupLayout()
 //        self.bruteForce(passwordToUnlock: "1!gr")
@@ -68,6 +74,7 @@ class ViewController: UIViewController {
         view.addSubview(textField)
         view.addSubview(label)
         view.addSubview(button)
+//        view.addSubview(activityIndicator)
     }
     
     private func setupLayout() {
@@ -88,11 +95,18 @@ class ViewController: UIViewController {
         button.snp.makeConstraints { make in
             make.centerX.equalTo(view)
             make.top.equalTo(label.snp.bottom).offset(30)
-            make.height.equalTo(40)
+            make.height.equalTo(50)
 //            make.top.equalTo(passwordTextField.snp.bottom).offset(50)
             make.left.equalTo(view).offset(50)
             make.right.equalTo(view).inset(50)
         }
+        
+//        activityIndicator.snp.makeConstraints { make in
+//            make.bottom.equalTo(textField.snp.top).offset(-30)
+//            make.height.equalTo(40)
+//            make.left.equalTo(view).offset(50)
+//            make.right.equalTo(view).inset(50)
+//        }
     }
     
     func bruteForce(passwordToUnlock: String) {
@@ -155,4 +169,13 @@ func generateBruteForce(_ string: String, fromArray array: [String]) -> String {
     }
 
     return str
+}
+
+extension UITextField {
+    func setRightIcon() {
+        let iconContainerView: UIView = UIView(frame: CGRect(x: 20, y: 0, width: 30, height: 20))
+        iconContainerView.addSubview(ViewController.activityIndicator)
+        rightView = iconContainerView
+        rightViewMode = .always
+    }
 }
