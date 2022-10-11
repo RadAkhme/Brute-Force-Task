@@ -10,44 +10,53 @@ import SnapKit
 
 class ViewController: UIViewController {
     
+    private lazy var textField: UITextField = {
+        let textField = UITextField()
+        textField.backgroundColor = .white
+        textField.placeholder = "password"
+        textField.textAlignment = .center
+        textField.layer.cornerRadius = 20
+        
+        return textField
+    }()
+    
     private lazy var label: UILabel = {
         let label = UILabel()
         label.text = "Label"
-        label.textColor = .systemCyan
+        label.textColor = .darkGray
         label.font = .boldSystemFont(ofSize: 40)
         
         return label
     }()
     
-    
-    
     private lazy var button: UIButton = {
         let button = UIButton()
-        button.setTitle("Push me срочно", for: .normal)
+        button.setTitle("Push me", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.backgroundColor = .systemGreen
-        button.layer.cornerRadius = 15
+        button.layer.cornerRadius = 20
         button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
 
         return button
     }()
     
-    var isBlack: Bool = false {
-        didSet {
-            if isBlack {
-                self.view.backgroundColor = .black
-            } else {
-                self.view.backgroundColor = .white
-            }
-        }
-    }
+//    var isBlack: Bool = false {
+//        didSet {
+//            if isBlack {
+//                self.view.backgroundColor = .black
+//            } else {
+//                self.view.backgroundColor = .systemGray3
+//            }
+//        }
+//    }
     
     @objc private func buttonPressed() {
-        isBlack.toggle()
+//        isBlack.toggle()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemGray3
         setupHierarchy()
         setupLayout()
 //        self.bruteForce(passwordToUnlock: "1!gr")
@@ -56,19 +65,29 @@ class ViewController: UIViewController {
     }
     
     private func setupHierarchy() {
+        view.addSubview(textField)
         view.addSubview(label)
         view.addSubview(button)
     }
     
     private func setupLayout() {
         
+        textField.snp.makeConstraints { make in
+            make.bottom.equalTo(label.snp.top).offset(-30)
+            make.height.equalTo(40)
+            make.left.equalTo(view).offset(50)
+            make.right.equalTo(view).inset(50)
+        }
+        
         label.snp.makeConstraints { make in
             make.centerX.equalTo(view)
-            make.bottom.equalTo(button.snp.top).offset(-80)
+            make.centerY.equalTo(view).offset(-50)
+
         }
         
         button.snp.makeConstraints { make in
-            make.center.equalTo(view)
+            make.centerX.equalTo(view)
+            make.top.equalTo(label.snp.bottom).offset(30)
             make.height.equalTo(40)
 //            make.top.equalTo(passwordTextField.snp.bottom).offset(50)
             make.left.equalTo(view).offset(50)
