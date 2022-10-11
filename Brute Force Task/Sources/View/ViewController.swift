@@ -6,9 +6,20 @@
 //
 
 import UIKit
+import SnapKit
 
 class ViewController: UIViewController {
-    @IBOutlet weak var button: UIButton!
+    
+    private lazy var button: UIButton = {
+        let button = UIButton()
+        button.setTitle("Push me срочно", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.backgroundColor = .systemGreen
+        button.layer.cornerRadius = 15
+        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     var isBlack: Bool = false {
         didSet {
@@ -20,17 +31,31 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func onBut(_ sender: Any) {
+    @objc private func buttonPressed() {
         isBlack.toggle()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        self.bruteForce(passwordToUnlock: "1!gr")
+        setupHierarchy()
+        setupLayout()
+//        self.bruteForce(passwordToUnlock: "1!gr")
         
         // Do any additional setup after loading the view.
+    }
+    
+    private func setupHierarchy() {
+        view.addSubview(button)
+    }
+    
+    private func setupLayout() {
+        button.snp.makeConstraints { make in
+            make.center.equalTo(view)
+            make.height.equalTo(40)
+//            make.top.equalTo(passwordTextField.snp.bottom).offset(50)
+            make.left.equalTo(view).offset(50)
+            make.right.equalTo(view).inset(50)
+        }
     }
     
     func bruteForce(passwordToUnlock: String) {
@@ -49,7 +74,6 @@ class ViewController: UIViewController {
         print(password)
     }
 }
-
 
 
 extension String {
