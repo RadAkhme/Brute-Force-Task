@@ -13,28 +13,40 @@ class ViewController: UIViewController {
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.backgroundColor = .white
-        textField.placeholder = "        password"
+        textField.placeholder = "password"
         textField.textAlignment = .center
         textField.layer.cornerRadius = 20
         textField.setRightIcon()
-        
+        textField.setLeftIcon(UIImage(named: "") ?? UIImage())
+        textField.text = ""
         return textField
     }()
     
     private lazy var label: UILabel = {
         let label = UILabel()
-        label.text = "Label"
+        label.text = "Угадать пароль?"
         label.textColor = .darkGray
-        label.font = .boldSystemFont(ofSize: 40)
+        label.font = .boldSystemFont(ofSize: 30)
         
         return label
     }()
     
-    private lazy var button: UIButton = {
+    private lazy var passwordButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Push me", for: .normal)
+        button.setTitle("Create password", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.backgroundColor = .systemGreen
+        button.layer.cornerRadius = 20
+        button.addTarget(self, action: #selector(passwordButtonPressed), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var button: UIButton = {
+        let button = UIButton()
+        button.setTitle("Press me!", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.backgroundColor = .systemRed
         button.layer.cornerRadius = 20
         button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
 
@@ -47,11 +59,9 @@ class ViewController: UIViewController {
     var isBlack: Bool = false {
         didSet {
             if isBlack {
-//                self.view.backgroundColor = .black
-                ViewController.activityIndicator.startAnimating()
+                self.view.backgroundColor = .systemCyan
             } else {
-//                self.view.backgroundColor = .systemGray3
-                ViewController.activityIndicator.stopAnimating()
+                self.view.backgroundColor = .systemYellow
             }
         }
     }
@@ -60,12 +70,25 @@ class ViewController: UIViewController {
         isBlack.toggle()
     }
     
+    @objc private func passwordButtonPressed() {
+        textField.isSecureTextEntry = true
+        label.text = "Сейчас угадаю..."
+        self.randomPassword()
+        ViewController.activityIndicator.startAnimating()
+        let queue = DispatchQueue.main
+        queue.asyncAfter(deadline: .now() + .milliseconds(1)) {
+            self.bruteForce(passwordToUnlock: self.textField.text ?? "")
+            ViewController.activityIndicator.stopAnimating()
+            self.passwordButton.setTitle("Попробуй еще", for: .normal)
+            self.textField.isSecureTextEntry = false
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemYellow
         setupHierarchy()
         setupLayout()
-//        self.bruteForce(passwordToUnlock: "1!gr")
         
         // Do any additional setup after loading the view.
     }
@@ -73,8 +96,8 @@ class ViewController: UIViewController {
     private func setupHierarchy() {
         view.addSubview(textField)
         view.addSubview(label)
+        view.addSubview(passwordButton)
         view.addSubview(button)
-//        view.addSubview(activityIndicator)
     }
     
     private func setupLayout() {
@@ -92,26 +115,33 @@ class ViewController: UIViewController {
 
         }
         
-        button.snp.makeConstraints { make in
+        passwordButton.snp.makeConstraints { make in
             make.centerX.equalTo(view)
             make.top.equalTo(label.snp.bottom).offset(30)
             make.height.equalTo(50)
-//            make.top.equalTo(passwordTextField.snp.bottom).offset(50)
             make.left.equalTo(view).offset(50)
             make.right.equalTo(view).inset(50)
         }
         
-//        activityIndicator.snp.makeConstraints { make in
-//            make.bottom.equalTo(textField.snp.top).offset(-30)
-//            make.height.equalTo(40)
-//            make.left.equalTo(view).offset(50)
-//            make.right.equalTo(view).inset(50)
-//        }
+        button.snp.makeConstraints { make in
+            make.centerX.equalTo(view)
+            make.top.equalTo(passwordButton.snp.bottom).offset(30)
+            make.height.equalTo(50)
+            make.left.equalTo(view).offset(50)
+            make.right.equalTo(view).inset(50)
+        }
+    }
+    
+    func randomPassword() {
+        let passwordCharacters = Array("".digits + "".lowercase + "".uppercase + "".punctuation)
+        let lenght = 3
+        let randomPassword = String((0..<lenght).map{ _ in passwordCharacters[Int(arc4random_uniform(UInt32(passwordCharacters.count)))]})
+        textField.text = randomPassword
     }
     
     func bruteForce(passwordToUnlock: String) {
         let ALLOWED_CHARACTERS:   [String] = String().printable.map { String($0) }
-
+        
         var password: String = ""
 
         // Will strangely ends at 0000 instead of ~~~
@@ -121,7 +151,7 @@ class ViewController: UIViewController {
             print(password)
             // Your stuff here
         }
-        
+        label.text = password
         print(password)
     }
 }
@@ -172,6 +202,14 @@ func generateBruteForce(_ string: String, fromArray array: [String]) -> String {
 }
 
 extension UITextField {
+    func setLeftIcon(_ image: UIImage) {
+        let iconView = UIImageView(frame: CGRect(x: 20, y: 6, width: 20, height: 18))
+        let iconContainerView: UIView = UIView(frame: CGRect(x: 20, y: 0, width: 30, height: 30))
+        iconContainerView.addSubview(iconView)
+        leftView = iconContainerView
+        leftViewMode = .always
+    }
+
     func setRightIcon() {
         let iconContainerView: UIView = UIView(frame: CGRect(x: 20, y: 0, width: 30, height: 20))
         iconContainerView.addSubview(ViewController.activityIndicator)
