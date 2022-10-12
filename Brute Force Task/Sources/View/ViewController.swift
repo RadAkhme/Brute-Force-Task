@@ -79,7 +79,6 @@ class ViewController: UIViewController {
         queue.asyncAfter(deadline: .now() + .milliseconds(1)) {
             self.bruteForce(passwordToUnlock: self.textField.text ?? "")
             ViewController.activityIndicator.stopAnimating()
-            self.passwordButton.setTitle("Попробуй еще", for: .normal)
             self.textField.isSecureTextEntry = false
         }
     }
@@ -157,22 +156,7 @@ class ViewController: UIViewController {
 }
 
 
-extension String {
-    var digits:      String { return "0123456789" }
-    var lowercase:   String { return "abcdefghijklmnopqrstuvwxyz" }
-    var uppercase:   String { return "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }
-    var punctuation: String { return "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" }
-    var letters:     String { return lowercase + uppercase }
-    var printable:   String { return digits + letters + punctuation }
 
-
-
-    mutating func replace(at index: Int, with character: Character) {
-        var stringArray = Array(self)
-        stringArray[index] = character
-        self = String(stringArray)
-    }
-}
 
 func indexOf(character: Character, _ array: [String]) -> Int {
     return array.firstIndex(of: String(character))!
@@ -201,19 +185,3 @@ func generateBruteForce(_ string: String, fromArray array: [String]) -> String {
     return str
 }
 
-extension UITextField {
-    func setLeftIcon(_ image: UIImage) {
-        let iconView = UIImageView(frame: CGRect(x: 20, y: 6, width: 20, height: 18))
-        let iconContainerView: UIView = UIView(frame: CGRect(x: 20, y: 0, width: 30, height: 30))
-        iconContainerView.addSubview(iconView)
-        leftView = iconContainerView
-        leftViewMode = .always
-    }
-
-    func setRightIcon() {
-        let iconContainerView: UIView = UIView(frame: CGRect(x: 20, y: 0, width: 30, height: 20))
-        iconContainerView.addSubview(ViewController.activityIndicator)
-        rightView = iconContainerView
-        rightViewMode = .always
-    }
-}
